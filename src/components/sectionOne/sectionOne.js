@@ -15,30 +15,24 @@ function LoadingFallback() {
 function HeroModel({ loopState, setAnimationDuration }) {
     const [modelError, setModelError] = useState(false);
 
-    const entryGltf = useGLTF("/models/Reesha Entry Play All.glb", undefined, (error) => {
-        console.error('Error loading entry model:', error);
-        setModelError(true);
-    });
-    
-    const exitGltf = useGLTF("/models/Reesha Exit Play All.glb", undefined, (error) => {
-        console.error('Error loading exit model:', error);
+    const gltf = useGLTF(`${process.env.PUBLIC_URL}/models/Reesha-Exit.glb`, undefined, (error) => {
+        console.error('Error loading model:', error);
         setModelError(true);
     });
 
-    const { actions: entryActions, names: entryNames } = useAnimations(entryGltf.animations, entryGltf.scene);
-    const { actions: exitActions, names: exitNames } = useAnimations(exitGltf.animations, exitGltf.scene);
+    const { actions, names } = useAnimations(gltf.animations, gltf.scene);
   
     useEffect(() => {
-        if (modelError) return;
+        if (modelError || !actions || names.length === 0) return;
 
-        if (loopState === 'entry' && entryActions && entryNames.length > 0) {
-            setAnimationDuration(entryGltf.animations[0].duration);
-            entryActions[entryNames[0]].reset().play();
-        } else if (loopState === 'exit' && exitActions && exitNames.length > 0) {
-            setAnimationDuration(exitGltf.animations[0].duration);
-            exitActions[exitNames[0]].reset().play();
+        // Get the first animation
+        const animation = actions[names[0]];
+        if (animation) {
+            setAnimationDuration(gltf.animations[0].duration);
+            animation.reset().play();
+            animation.setLoop(true);
         }
-    }, [loopState, entryActions, entryNames, exitActions, exitNames, setAnimationDuration, modelError, entryGltf.animations, exitGltf.animations]);
+    }, [actions, names, setAnimationDuration, modelError, gltf.animations]);
 
     if (modelError) {
         return null;
@@ -46,7 +40,7 @@ function HeroModel({ loopState, setAnimationDuration }) {
   
     return (
         <primitive
-            object={loopState === 'entry' ? entryGltf.scene : exitGltf.scene}
+            object={gltf.scene}
             scale={[25, 25, 25]}
             position={[0, 0, 0]}
         />
@@ -54,15 +48,7 @@ function HeroModel({ loopState, setAnimationDuration }) {
 }
 
 const SectionOne = () => {
-    const [loopState, setLoopState] = useState('entry');
     const [animationDuration, setAnimationDuration] = useState(5);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setLoopState((prev) => (prev === 'entry' ? 'exit' : 'entry'));
-        }, animationDuration * 1000);
-        return () => clearInterval(interval);
-    }, [animationDuration]);
 
     return(
         <Box className="background">
@@ -123,7 +109,7 @@ const SectionOne = () => {
                     <Suspense fallback={<LoadingFallback />}>
                         <ambientLight intensity={0.5} />
                         <directionalLight position={[0, 5, 5]} intensity={1} />
-                        <HeroModel loopState={loopState} setAnimationDuration={setAnimationDuration} />
+                        <HeroModel setAnimationDuration={setAnimationDuration} />
                         <OrbitControls enableZoom={false} enableRotate={true} />
                     </Suspense>
                 </Canvas>
@@ -146,13 +132,13 @@ const SectionOne = () => {
                     <Suspense fallback={<LoadingFallback />}>
                         <ambientLight intensity={0.5} />
                         <directionalLight position={[0, 5, 5]} intensity={1} />
-                        <HeroModel loopState={loopState} setAnimationDuration={setAnimationDuration} />
+                        <HeroModel setAnimationDuration={setAnimationDuration} />
                         <OrbitControls enableZoom={false} enableRotate={true} />
                     </Suspense>
                 </Canvas>
             </Box>
         </Box>
     );
-}; 
+};
 
 export default SectionOne;
