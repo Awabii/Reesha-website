@@ -6,8 +6,11 @@
       "dest": "/static/$1"
     },
     {
-      "src": "^/models/(.*)",
-      "dest": "/models/$1"
+      "src": "^/models/(.*)\\.glb$",
+      "headers": {
+        "content-type": "model/gltf-binary"
+      },
+      "dest": "/models/$1.glb"
     },
     {
       "src": "^/images/(.*)",
@@ -32,6 +35,15 @@
     {
       "src": "^/(.*)",
       "dest": "/index.html"
+    }
+  ],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
     }
   ]
 } 

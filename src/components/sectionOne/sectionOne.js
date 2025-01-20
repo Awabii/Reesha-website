@@ -8,13 +8,29 @@ import { useGLTF, OrbitControls, Stats, useAnimations } from "@react-three/drei"
 import { Suspense } from 'react'
 import { useEffect, useState } from 'react';
 
+function LoadingFallback() {
+    return null; // Or you could return a loading spinner/placeholder
+}
+
 function HeroModel({ loopState, setAnimationDuration }) {
-    const entryGltf = useGLTF("/models/Reesha Entry Play All.glb");
-    const exitGltf = useGLTF("/models/Reesha Exit Play All.glb");
+    const [modelError, setModelError] = useState(false);
+
+    const entryGltf = useGLTF("/models/Reesha Entry Play All.glb", undefined, (error) => {
+        console.error('Error loading entry model:', error);
+        setModelError(true);
+    });
+    
+    const exitGltf = useGLTF("/models/Reesha Exit Play All.glb", undefined, (error) => {
+        console.error('Error loading exit model:', error);
+        setModelError(true);
+    });
+
     const { actions: entryActions, names: entryNames } = useAnimations(entryGltf.animations, entryGltf.scene);
     const { actions: exitActions, names: exitNames } = useAnimations(exitGltf.animations, exitGltf.scene);
   
     useEffect(() => {
+        if (modelError) return;
+
         if (loopState === 'entry' && entryActions && entryNames.length > 0) {
             setAnimationDuration(entryGltf.animations[0].duration);
             entryActions[entryNames[0]].reset().play();
@@ -22,7 +38,11 @@ function HeroModel({ loopState, setAnimationDuration }) {
             setAnimationDuration(exitGltf.animations[0].duration);
             exitActions[exitNames[0]].reset().play();
         }
-    }, [loopState, entryActions, entryNames, exitActions, exitNames, setAnimationDuration]);
+    }, [loopState, entryActions, entryNames, exitActions, exitNames, setAnimationDuration, modelError, entryGltf.animations, exitGltf.animations]);
+
+    if (modelError) {
+        return null;
+    }
   
     return (
         <primitive
@@ -100,7 +120,7 @@ const SectionOne = () => {
                         maxWidth: '50%'
                     }}
                     camera={{ position: [0, 2, 5], fov: 50 }}>
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<LoadingFallback />}>
                         <ambientLight intensity={0.5} />
                         <directionalLight position={[0, 5, 5]} intensity={1} />
                         <HeroModel loopState={loopState} setAnimationDuration={setAnimationDuration} />
@@ -123,7 +143,7 @@ const SectionOne = () => {
                         maxWidth: '50%'
                     }}
                     camera={{ position: [0, 2, 5], fov: 50 }}>
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<LoadingFallback />}>
                         <ambientLight intensity={0.5} />
                         <directionalLight position={[0, 5, 5]} intensity={1} />
                         <HeroModel loopState={loopState} setAnimationDuration={setAnimationDuration} />
