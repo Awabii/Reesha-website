@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import pathImage from '../../images/Path.png';
+import pathGif from '../../animations/Path.gif';
 
 const InteractivePath = () => {
     return (
@@ -24,7 +24,7 @@ const InteractivePath = () => {
                 alignItems: 'center'
             }}>
                 <img 
-                    src={pathImage} 
+                    src={pathGif}
                     alt="Learning Path"
                     style={{
                         width: '100%',
