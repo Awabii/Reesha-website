@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "set GENERATE_SOURCEMAP=false && react-scripts build && xcopy /E /I /Y public\\models build\\models",
+    "build": "react-scripts build && xcopy /E /I /Y public\\models build\\models",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
