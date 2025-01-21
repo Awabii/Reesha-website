@@ -41,8 +41,8 @@ function HeroModel({ loopState, setAnimationDuration }) {
     return (
         <primitive
             object={gltf.scene}
-            scale={[25, 25, 25]}
-            position={[0, 0, 0]}
+            scale={[35, 35, 35]}
+            position={[0, -1, 0]}
         />
     );
 }
@@ -100,10 +100,11 @@ const SectionOne = () => {
                 <Canvas 
                     style={{
                         position: 'absolute',
-                        top: '30%',
-                        left: "50%",
+                        top: '0',
+                        right: '0',
                         zIndex: 2,
-                        maxWidth: '50%'
+                        width: '800px',
+                        height: '800px'
                     }}
                     camera={{ position: [0, 2, 5], fov: 50 }}>
                     <Suspense fallback={<LoadingFallback />}>
@@ -126,7 +127,9 @@ const SectionOne = () => {
                 />
                 <Canvas 
                     style={{
-                        maxWidth: '50%'
+                        width: '300px',
+                        height: '300px',
+                        marginTop: '-20%'
                     }}
                     camera={{ position: [0, 2, 5], fov: 50 }}>
                     <Suspense fallback={<LoadingFallback />}>
